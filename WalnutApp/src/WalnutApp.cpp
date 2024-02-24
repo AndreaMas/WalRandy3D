@@ -16,13 +16,27 @@ public:
 	}
 };
 
+class MasLayer : public Walnut::Layer
+{
+public:
+	virtual void OnUIRender() override
+	{
+		ImGui::Begin("Mas");
+		ImGui::Button("MasMas");
+		ImGui::End();
+
+		//ImGui::ShowDemoWindow();
+	}
+};
+
 Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
 {
 	Walnut::ApplicationSpecification spec;
 	spec.Name = "Walnut Example";
 
 	Walnut::Application* app = new Walnut::Application(spec);
-	app->PushLayer<ExampleLayer>();
+	//app->PushLayer<ExampleLayer>();
+	app->PushLayer<MasLayer>();
 	app->SetMenubarCallback([app]()
 	{
 		if (ImGui::BeginMenu("File"))
