@@ -2,6 +2,8 @@
 #include "Walnut/EntryPoint.h"
 
 #include "Walnut/Image.h"
+#include "Walnut/Random.h"
+#include "Walnut/Timer.h"
 
 using namespace Walnut;
 
@@ -28,6 +30,8 @@ public:
 		// settings panel
 
 		ImGui::Begin("Settings");
+		ImGui::Text("Last render time: %.3f ms", m_LastRenderTime);
+		ImGui::Text("Approx Framerate: %.1f fps", 1000/m_LastRenderTime);
 
 		if (ImGui::Button("Render"))
 		{
@@ -51,10 +55,16 @@ public:
 
 		ImGui::End();
 		ImGui::PopStyleVar();
+
+		// render every frame
+
+		Render();
 	}
 
 	void Render()
 	{
+		Timer timer;
+
 		if (!m_Image || 
 			m_ViewportWidth != m_Image->GetWidth() || 
 			m_ViewportHeight != m_Image->GetHeight())
@@ -66,10 +76,13 @@ public:
 
 		for (uint32_t i = 0; i < m_ViewportWidth * m_ViewportHeight; i++) 
 		{
-			m_ImageData[i] = 0xffff00ff;
+			m_ImageData[i] = Random::UInt();
+			m_ImageData[i] |= 0xff000000;
 		}
 
 		m_Image->SetData(m_ImageData);
+
+		m_LastRenderTime = timer.ElapsedMillis();
 	}
 
 private:
@@ -77,6 +90,7 @@ private:
 	std::shared_ptr<Image> m_Image;
 	uint32_t* m_ImageData = nullptr;
 	uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
+	float m_LastRenderTime = 0.0f;
 };
 
 Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
